@@ -1,0 +1,145 @@
+<html>
+    <head>
+        <title>sample</title>
+        
+    
+  
+    </head>
+    <body>
+
+    <div id="auth_status">
+        <h1>Welcome User</h1>
+    <button class="logout">Logout</button>
+    </div>
+
+<div class="forms">
+    <form method="post" id="loginform">
+        <h2>Login</h2>
+        <label for="email">E-mail:</label>
+        <input type="e-mail" id="loginemail" name="loginemail"><br>
+        
+        
+        <label for="password">Password:</label>
+        <input type="password" id="loginpassword" name="loginpassword"><br>
+       <input type="submit" value="Login">
+        
+        </form>
+    
+    <form method="post" id="regform">
+        <h2>Register</h2>
+        <label for="email">E-mail:</label>
+        <input type="e-mail" id="email" name="eMail"><br>
+        
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="passWord"><br>
+       <input type="submit" value="Register">
+        
+        </form>
+</div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js" integrity="sha512-bPh3uwgU5qEMipS/VOmRqynnMXGGSRv+72H/N260MQeXZIK4PG48401Bsby9Nq5P5fz7hy5UGNmC/W1Z51h2GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js" integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        function login(){
+            var email = document.getElementById("loginemail").value;
+            var password = document.getElementById("loginpassword").value;
+
+            if(!email && !password) {
+                alert("Please enter your email and password");
+            }
+            else{
+                axios.post('http://localhost:5000/login',{
+                    email: email,
+                    password: password
+
+                }).then((r)=>{
+                    console.log(r);
+                    const {resObj} = r.data;
+                    const {id} = resObj;
+                    Cookies.set('user',id);
+                    window.location.reload();
+
+                }).catch((e)=>{
+                    console.log(e);
+                })
+            }
+        }
+
+
+        function register(){
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            if(!email && !password){
+                alert("Please enter your email and password");
+            }
+            else{
+                axios.post('http://localhost:5000/register',{
+                    email: email,
+                    password: password
+
+                }).then((r)=>{
+                    console.log(r);
+                    // const {resObj} = r.data;
+                    // const {id} = resObj;
+                    // Cookies.set('user',id);
+                    // window.location.reload();
+                    const {message} = r.data;
+                    if(message){
+                        alert(message);
+                    }
+
+                }).catch((e)=>{
+                    console.log(e);
+                })
+            }
+        }
+
+
+        function logout(){
+            Cookies.remove('user');
+            window.location.reload();
+        }
+
+        document.querySelector('.logout').addEventListener('click',()=>{
+            logout();
+        
+        })
+
+
+
+        const form = document.getElementById("loginform");
+        form.addEventListener("submit", function(event){
+            event.preventDefault();
+
+            login();
+        });
+
+        const regform = document.getElementById("regform");
+        regform.addEventListener("submit", function(event){
+            event.preventDefault();
+            register();
+        });
+
+
+
+        // detect user login status
+        // if user present in cookie mean user is logged in
+
+
+        function detectUserLoginStatus(){
+            var user = Cookies.get('user');
+            if(user){
+                document.querySelector('.forms').style.display = "none";
+            }
+            else{
+                document.querySelector('#auth_status').style.display = "none";
+            }
+        }
+
+        window.onload = detectUserLoginStatus();
+    </script>
+</body>
+    </html
